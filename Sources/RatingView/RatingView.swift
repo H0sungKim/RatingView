@@ -28,6 +28,17 @@ import UIKit
             updateView()
         }
     }
+    @IBInspectable public var rating: Float = 0 {
+        didSet {
+            didSetRating()
+        }
+    }
+    private func didSetRating() {
+        ratingItemViews.enumerated().forEach({ index, ratingItemView in
+            ratingItemView.fill = max(0, min(rating-Float(index), 1))
+        })
+        delegate?.valueChanged?(rating)
+    }
     
     @IBInspectable public var isAnimationEnabled: Bool = true
     @IBInspectable public var isHapticEnabled: Bool = true
@@ -53,17 +64,6 @@ import UIKit
     private func didSetBaseColor() {
         ratingItemViews.forEach({ ratingItemView in
             ratingItemView.baseColor = baseColor
-        })
-    }
-    
-    public var rating: Float = 0 {
-        didSet {
-            didSetRating()
-        }
-    }
-    private func didSetRating() {
-        ratingItemViews.enumerated().forEach({ index, ratingItemView in
-            ratingItemView.fill = max(0, min(rating-Float(index), 1))
         })
     }
     
@@ -161,7 +161,6 @@ import UIKit
         default:
             break
         }
-        delegate?.valueChanged?(validRangeStar)
         rating = validRangeStar
     }
 }
