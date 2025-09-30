@@ -119,8 +119,9 @@ import UIKit
     }
     
     private func generateHaptic() {
-        guard isHapticEnabled else { return }
-        hapticGenerator.impactOccurred()
+        if isHapticEnabled {
+            hapticGenerator.impactOccurred()
+        }
     }
     
     // MARK: - Gesture
@@ -145,23 +146,23 @@ import UIKit
     
     private func gestureHandler(recognizer: UIGestureRecognizer) {
         let discretizedRating: Float = Float(Int(recognizer.location(in: self).x / self.bounds.width * CGFloat(maximumRating) * CGFloat(interval.rawValue))+1) / Float(interval.rawValue)
-        let validRangeStar: Float = max(0, min(discretizedRating, Float(maximumRating)))
+        let validRangeRating: Float = max(0, min(discretizedRating, Float(maximumRating)))
         switch recognizer.state {
         case .began:
             generateHaptic()
             animate(rating: discretizedRating)
-            delegate?.touchDown?(validRangeStar)
+            delegate?.touchDown?(validRangeRating)
         case .changed:
-            guard validRangeStar != rating else { return }
+            guard validRangeRating != rating else { return }
             generateHaptic()
             animate(rating: discretizedRating)
         case .ended:
-            delegate?.touchUp?(validRangeStar)
+            delegate?.touchUp?(validRangeRating)
             animate(rating: 0)
         default:
             break
         }
-        rating = validRangeStar
+        rating = validRangeRating
     }
 }
 
