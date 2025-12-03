@@ -37,7 +37,7 @@ import UIKit
         ratingItemViews.enumerated().forEach({ index, ratingItemView in
             ratingItemView.fill = max(0, min(rating-Float(index), 1))
         })
-        delegate?.valueChanged?(rating)
+        delegate?.valueChanged(rating)
     }
     
     @IBInspectable public var isAnimationEnabled: Bool = true
@@ -151,13 +151,13 @@ import UIKit
         case .began:
             generateHaptic()
             animate(rating: discretizedRating)
-            delegate?.touchDown?(validRangeRating)
+            delegate?.touchDown(validRangeRating)
         case .changed:
             guard validRangeRating != rating else { return }
             generateHaptic()
             animate(rating: discretizedRating)
         case .ended:
-            delegate?.touchUp?(validRangeRating)
+            delegate?.touchUp(validRangeRating)
             animate(rating: 0)
         default:
             break
@@ -172,10 +172,22 @@ extension RatingView: UIGestureRecognizerDelegate {
     }
 }
 
-@MainActor
-@objc public protocol RatingViewDelegate: AnyObject {
-    @objc optional func valueChanged(_ value: Float)
-    @objc optional func touchDown(_ value: Float)
-    @objc optional func touchUp(_ value: Float)
+public protocol RatingViewDelegate: AnyObject {
+    func valueChanged(_ value: Float)
+    func touchDown(_ value: Float)
+    func touchUp(_ value: Float)
 }
 
+extension RatingViewDelegate {
+    public func valueChanged(_ value: Float) {
+        print("value changed: \(value)")
+    }
+    
+    public func touchDown(_ value: Float) {
+        print("touch down: \(value)")
+    }
+    
+    public func touchUp(_ value: Float) {
+        print("touch up: \(value)")
+    }
+}

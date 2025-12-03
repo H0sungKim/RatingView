@@ -23,15 +23,6 @@ class ViewController: UIViewController {
 
 extension ViewController: RatingViewDelegate {
     func valueChanged(_ value: Float) {
-        print("value changed: \(value)")
         ratingLabel.text = "\(value)"
-    }
-    
-    func touchDown(_ value: Float) {
-        print("touch down: \(value)")
-    }
-    
-    func touchUp(_ value: Float) {
-        print("touch up: \(value)")
     }
 }
