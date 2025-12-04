@@ -53,6 +53,7 @@ class RatingItemView: UIView {
             imageView.trailingAnchor.constraint(equalTo: trailingAnchor),
             imageView.centerXAnchor.constraint(equalTo: centerXAnchor),
             imageView.centerYAnchor.constraint(equalTo: centerYAnchor),
+            imageView.widthAnchor.constraint(equalTo: heightAnchor)
         ])
     }
     

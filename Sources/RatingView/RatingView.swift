@@ -5,7 +5,6 @@
 //  Created by 김호성 on 2025.06.04.
 //
 
-import Foundation
 import UIKit
 
 @IBDesignable public class RatingView: UIView {
@@ -23,6 +22,11 @@ import UIKit
     }
     public var interval: Interval = .half
     
+    @IBInspectable public var spacing: CGFloat = 0 {
+        didSet {
+            stackView.spacing = spacing
+        }
+    }
     @IBInspectable public var maximumRating: Int = 5 {
         didSet {
             updateView()
@@ -37,13 +41,19 @@ import UIKit
         ratingItemViews.enumerated().forEach({ index, ratingItemView in
             ratingItemView.fill = max(0, min(rating-Float(index), 1))
         })
-        delegate?.valueChanged(rating)
+        delegate?.valueChanged(self, value: rating)
     }
     
     @IBInspectable public var isAnimationEnabled: Bool = true
     @IBInspectable public var isHapticEnabled: Bool = true
     
-    @IBInspectable public var symbolImage: UIImage = UIImage(systemName: "star.fill")!
+    @IBInspectable public var symbolImage: UIImage = UIImage(systemName: "star.fill")! {
+        didSet {
+            for ratingItemView in ratingItemViews {
+                ratingItemView.imageView.image = symbolImage
+            }
+        }
+    }
     
     @IBInspectable public var accentColor: UIColor? {
         didSet {
@@ -65,6 +75,11 @@ import UIKit
         ratingItemViews.forEach({ ratingItemView in
             ratingItemView.baseColor = baseColor
         })
+    }
+    
+    public override var intrinsicContentSize: CGSize {
+        let symbolSize = symbolImage.size
+        return CGSize(width: symbolSize.width * CGFloat(maximumRating) + spacing * CGFloat(maximumRating - 1), height: symbolSize.height)
     }
     
     required init?(coder: NSCoder) {
@@ -91,7 +106,7 @@ import UIKit
         stackView.translatesAutoresizingMaskIntoConstraints = false
         
         stackView.axis = .horizontal
-        stackView.spacing = 0
+        stackView.spacing = spacing
         stackView.alignment = .fill
         stackView.distribution = .fillEqually
         
@@ -151,13 +166,13 @@ import UIKit
         case .began:
             generateHaptic()
             animate(rating: discretizedRating)
-            delegate?.touchDown(validRangeRating)
+            delegate?.touchDown(self, value: validRangeRating)
         case .changed:
             guard validRangeRating != rating else { return }
             generateHaptic()
             animate(rating: discretizedRating)
         case .ended:
-            delegate?.touchUp(validRangeRating)
+            delegate?.touchUp(self, value: validRangeRating)
             animate(rating: 0)
         default:
             break
@@ -173,21 +188,21 @@ extension RatingView: UIGestureRecognizerDelegate {
 }
 
 public protocol RatingViewDelegate: AnyObject {
-    func valueChanged(_ value: Float)
-    func touchDown(_ value: Float)
-    func touchUp(_ value: Float)
+    func valueChanged(_ ratingView: RatingView, value: Float)
+    func touchDown(_ ratingView: RatingView, value: Float)
+    func touchUp(_ ratingView: RatingView, value: Float)
 }
 
 extension RatingViewDelegate {
-    public func valueChanged(_ value: Float) {
+    public func valueChanged(_ ratingView: RatingView, value: Float) {
         print("value changed: \(value)")
     }
     
-    public func touchDown(_ value: Float) {
+    public func touchDown(_ ratingView: RatingView, value: Float) {
         print("touch down: \(value)")
     }
     
-    public func touchUp(_ value: Float) {
+    public func touchUp(_ ratingView: RatingView, value: Float) {
         print("touch up: \(value)")
     }
 }
